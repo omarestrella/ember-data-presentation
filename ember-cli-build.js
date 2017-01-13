@@ -7,6 +7,13 @@ module.exports = function(defaults) {
     // Add options here
   });
 
+  app.import('bower_components/highlightjs/highlight.pack.js');
+  app.import('bower_components/highlightjs/styles/solarized-light.css');
+
+  app.import('bower_components/reveal.js/js/reveal.js');
+  app.import('bower_components/reveal.js/css/reveal.css');
+  app.import('bower_components/reveal.js/css/theme/black.css');
+
   // Use `app.import` to add additional libraries to the generated
   // output files.
   //

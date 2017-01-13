@@ -1,0 +1,61 @@
+<h2>
+    Lists
+
+    <small>
+        {{demo-app/create-list save=(action "save")}}
+    </small>
+</h2>
+
+<div class="container">
+    <div class="lists">
+        <p>
+            {{#each activeLists as |list|}}
+                <a href="#" {{action "selectList" list}}>
+                    {{list.name}}<br>
+                </a>
+            {{/each}}
+        </p>
+
+        {{#if deletedLists}}
+            <h4>Trash</h4>
+            {{#each deletedLists as |list|}}
+                <a href="#" {{action "selectList" list}}>
+                    {{list.name}}<br>
+                </a>
+            {{/each}}
+        {{/if}}
+    </div>
+
+    {{#if currentList}}
+        <div class="items">
+            <h3>
+                {{currentList.name}}
+
+                <small>
+                    {{#if currentList.isDeleted}}
+                        <button class="button danger" {{action "deleteList" currentList}}>
+                            Delete forever
+                        </button>
+
+                        <button class="button" {{action "restoreList" currentList}}>
+                            Restore list
+                        </button>
+                    {{else}}
+                        <button class="button danger" {{action "sendListToTrash" currentList}}>
+                            Send to trash
+                        </button>
+                        <button class="button" {{action "addNewItem"}}>
+                            Add new item
+                        </button>
+                    {{/if}}
+                </small>
+            </h3>
+
+            <div class="list-items">
+                {{#each currentList.items as |item|}}
+                    {{demo-app/list-item item=item}}
+                {{/each}}
+            </div>
+        </div>
+    {{/if}}
+</div>

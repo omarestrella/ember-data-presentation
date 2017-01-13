@@ -1,0 +1,10 @@
+{{#if showForm}}
+    <input type="text" value={{listName}} oninput={{action "setName" on="input"}}>
+    <button class="button" {{action "save"}}>
+        Save
+    </button>
+{{else}}
+    <button class="button" {{action "toggleForm"}}>
+        Create New List
+    </button>
+{{/if}}

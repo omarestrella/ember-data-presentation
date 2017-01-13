@@ -1,0 +1,7 @@
+<span class="done">
+    <input type="checkbox" checked={{item.done}} onchange={{action "toggleDone" on="change"}}>
+</span>
+
+<span class="content">
+    <input type="text" value={{item.content}} oninput={{action "saveContent"}}>
+</span>

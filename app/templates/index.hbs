@@ -1,0 +1,307 @@
+{{#reveal-presentation}}
+    {{#reveal-slide classNames="title-slide"}}
+        <h1>Ember Data</h1>
+        <h4>The Elephant in the Room</h4>
+    {{/reveal-slide}}
+
+    {{#reveal-slide}}
+        {{#slide-header}}
+            What is Ember Data?
+        {{/slide-header}}
+        {{#slide-content}}
+            <ul>
+                <li>A data persistence library for Ember.js that provides:</li>
+                <ul>
+                    <li>A framework for models & their relationships</li>
+                    <li>Efficient caching and cache-busting</li>
+                    <li>Convention over configuration via adapters and serializers</li>
+                </ul>
+                <li>It is the main data persistence library for Ember, supported by the core team</li>
+            </ul>
+        {{/slide-content}}
+    {{/reveal-slide}}
+
+    {{#reveal-slide}}
+        {{#slide-header}}
+            Alternatives
+        {{/slide-header}}
+        {{#slide-content}}
+            <ul>
+                <li>Raw jQuery</li>
+                <li>
+                    <a href="https://github.com/toranb/ember-cli-simple-store">ember-cli-simple-store</a>
+                </li>
+                <li>
+                    <a href="https://github.com/chrisfarber/ember-flexure">ember-flexure</a>
+                </li>
+            </ul>
+        {{/slide-content}}
+    {{/reveal-slide}}
+
+    {{#reveal-slide}}
+        {{#slide-header}}
+            Three years ago...
+        {{/slide-header}}
+
+        {{#slide-content}}
+            <ul>
+                <li>Using Ember 0.9.8.1, Ember Data still in its infancy</li>
+                <li>1k+ lines of custom store/serializer/model logic</li>
+                <li>Bugs, bugs, bugs</li>
+                <li>Some conventions, mostly shooting from the hip</li>
+            </ul>
+        {{/slide-content}}
+    {{/reveal-slide}}
+
+    {{#reveal-slide}}
+        {{#slide-header}}
+            Now
+        {{/slide-header}}
+        {{#slide-content}}
+            <ul>
+                <li>Conventions brought in because of Ember Data</li>
+                <li>Easy to onboard new developers</li>
+                <li>Significantly less developer time spent maintaining custom solutions</li>
+            </ul>
+        {{/slide-content}}
+    {{/reveal-slide}}
+
+    {{#reveal-slide}}
+        {{#slide-header}}
+            Why use Ember Data?
+        {{/slide-header}}
+        {{#slide-content}}
+            <ul>
+                <li>Supported by the core team</li>
+                <li>Save time developing your own data layer</li>
+                <ul>
+                    <li>Serializer, adapter, cache, record state, relationships, etc.</li>
+                </ul>
+                <li>Data source agnostic</li>
+                <ul>
+                    <li>Use with HTTP APIs, streaming socket data, local database storage (localstorage, IndexedDB)</li>
+                </ul>
+            </ul>
+        {{/slide-content}}
+    {{/reveal-slide}}
+
+    {{#reveal-slide}}
+        {{#slide-header}}
+            Demo
+        {{/slide-header}}
+        {{#slide-content}}
+            <p>
+                Our application will be the defacto web framework "Hello, World": The To-Do App
+            </p>
+
+            <p>
+                <iframe src="http://localhost:4200/demo-app"
+                    width="100%" height="420px"></iframe>
+            </p>
+        {{/slide-content}}
+
+        {{#slide-content}}
+            <p>
+                Our API is responsible for two items of data:<br>
+                    1. To-do List<br>
+                    2. To-do Item
+            </p>
+
+            <div class="code-container">
+                {{#slide-code}}
+// List
+{
+    "name": &lt;string&gt;,
+    "items": [ &lt;ids&gt; ]
+}
+                {{/slide-code}}
+                {{#slide-code}}
+// Item
+{
+    "content": &lt;string&gt;,
+    "done": &lt;boolean&gt;
+}
+                {{/slide-code}}
+            </div>
+        {{/slide-content}}
+
+        {{#slide-content}}
+            <p>
+                We need to define the two models:
+            </p>
+
+            <div class="code-container">
+                {{slide-code module="models/list"}}
+                {{slide-code module="models/item"}}
+            </div>
+
+            <p>
+                Models attributes can contain a type:
+                <code class="inline">attribute: attr('iso-date')</code>
+            </p>
+
+            <p>
+                Types have transforms that change data for you:
+                <div class="code-container one">
+                    {{#slide-code}}
+// app/transforms/iso-date.js
+import Transform from 'ember-data/transform';
+
+export default Transform.extend({
+    deserialize(serialized) {
+        return new Date(serialized);
+    },
+
+    serialize(deserialized) {
+        return deserialized.toISOString();
+    }
+});
+                    {{/slide-code}}
+                </div>
+            </p>
+        {{/slide-content}}
+
+        {{#slide-content}}
+            <p>
+                How do we get our application and API communicating?
+            </p>
+
+            <p>
+                <ol>
+                    <li>Use the store to find the data you need:
+                        <code class="inline">this.store.findAll('list')</code>
+                    </li>
+                    <li>
+                        The store goes to the relevant adapter method to reach your API:
+                        <code class="inline">
+                            findAll(store, type, since, recordArray)
+                        </code>
+                    </li>
+                    <li>
+                        Then the store goes to the serializer:
+                        <code class="inline">
+                            normalizeFindAllResponse(store, type, payload, id, requestType)
+                        </code>
+                    </li>
+                </ol>
+            </p>
+        {{/slide-content}}
+
+        {{#slide-content}}
+            <p>
+                The store is the central service that your application communicates with.
+            </p>
+
+            <div class="code-container one">
+                    {{#slide-code}}
+{
+    findRecord(type, id), // Load a single record
+    findAll(type), // Load all records
+    query(type, queryData), // Query your API for data, like a search endpoint
+    createRecord(type, modelData) // Create model reference locally to save later
+    deleteRecord(record) // Mark local record reference as "deleted"
+}
+                    {{/slide-code}}
+            </div>
+
+            <p>
+                When you call a store method, it returns a <code class="inline">RecordArray</code> for
+                that type. The store updates the array as you modify your model state.
+            </p>
+
+            <div class="code-container">
+                    {{#slide-code}}
+Route.extend({
+    ...
+    model() {
+        return this.store.findAll('list');
+    }
+    ...
+});
+                    {{/slide-code}}
+
+                    {{#slide-code}}
+Component.extend({
+    ...
+    activeLists: computed('model.@each.isDeleted', function () {
+        return this.get('lists').rejectBy('isDeleted');
+    })
+    ...
+});
+                    {{/slide-code}}
+            </div>
+        {{/slide-content}}
+
+        {{#slide-content}}
+            <p>
+                The adapter and serializer is where all the customization for your API happens:
+            </p>
+
+            <p>
+                <div class="code-container">
+                    {{#slide-code}}
+// Adapter
+findRecord()
+createRecord()
+updateRecord()
+deleteRecord()
+findAll()
+query()
+                    {{/slide-code}}
+                    {{#slide-code}}
+// Serializer
+normalizeCreateRecordResponse()
+normalizeDeleteRecordResponse()
+normalizeFindAllResponse()
+normalizeFindBelongsToResponse()
+normalizeFindHasManyResponse()
+normalizeFindManyResponse()
+normalizeFindRecordResponse()
+
+// What else?
+extractId()
+extractMeta()
+extractRelationship()
+serialize()
+serializeBelongsTo()
+serializeHasMany()
+                    {{/slide-code}}
+                </div>
+            </p>
+        {{/slide-content}}
+
+        {{#slide-content}}
+            <p>
+                A look at custom adapter
+            </p>
+
+            <div class="code-container one">
+                {{slide-code module="adapters/application"}}
+            </div>
+        {{/slide-content}}
+    {{/reveal-slide}}
+
+    {{#reveal-slide}}
+        {{#slide-header}}
+            Common Concerns
+        {{/slide-header}}
+        {{#slide-content}}
+            <div>
+                <p>
+                    <em>"Our API is too complicated for Ember Data."​</em><br>
+                    Ember Data provides serializer layer to help process incoming data
+                </p>
+
+                <p>
+                    <em>"We don't use HTTP to transfer data from server to client."</em><br>
+                    Ember Data doesn't care and provides adapter layer to customize data source
+                </p>
+
+                <p>
+                    <em>"We really like maintaining brittle, proprietary code"</em><br>
+                    Good luck and godspeed
+                </p>
+            </div>
+        {{/slide-content}}
+    {{/reveal-slide}}
+{{/reveal-presentation}}

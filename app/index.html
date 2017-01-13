@@ -10,15 +10,29 @@
     {{content-for "head"}}
 
     <link rel="stylesheet" href="{{rootURL}}assets/vendor.css">
-    <link rel="stylesheet" href="{{rootURL}}assets/ember-data.css">
+    <link rel="stylesheet" href="{{rootURL}}assets/presentation.css">
 
     {{content-for "head-footer"}}
   </head>
   <body>
     {{content-for "body"}}
 
+
+    <script src="https://www.gstatic.com/firebasejs/3.6.5/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyBrGc5M_J0EopSpqv4V9AbTHjqMuEECTIY",
+            authDomain: "ember-data-presentation.firebaseapp.com",
+            databaseURL: "https://ember-data-presentation.firebaseio.com",
+            storageBucket: "ember-data-presentation.appspot.com",
+            messagingSenderId: "979244702051"
+        };
+        firebase.initializeApp(config);
+    </script>
+
     <script src="{{rootURL}}assets/vendor.js"></script>
-    <script src="{{rootURL}}assets/ember-data.js"></script>
+    <script src="{{rootURL}}assets/presentation.js"></script>
 
     {{content-for "body-footer"}}
   </body>
